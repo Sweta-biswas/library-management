@@ -52,7 +52,7 @@ const ReportsPage = () => {
           isSidebarOpen ? 'block' : 'hidden'
         } md:block w-full md:w-1/4 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6`}
       >
-        <h2 className="text-2xl font-bold mb-8 text-center">Library Services</h2>
+        <h2 className="text-2xl font-bold mb-8 text-center">Available Reports</h2>
         <ul className="space-y-4">
           <li
             className="cursor-pointer p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
@@ -107,6 +107,13 @@ const ReportsPage = () => {
         {activeSection === 'books' && <BooksList />}
         {activeSection === 'overdue' && <OverDueReturns/>}
         {activeSection === 'pendingissue' && <PendingIssue  />}
+
+        {!activeSection && (
+          <div className="text-center text-gray-600 mt-10">
+            <h3 className="text-2xl font-semibold">Welcome to Reports Services</h3>
+            <p className="mt-4">Please select an option from the sidebar to get started.</p>
+          </div>
+        )}
       </div>
     </div>
   );

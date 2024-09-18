@@ -7,6 +7,22 @@ const AdminHomePage = () => {
     const handleTransactionsClick = () => {
     navigate('/transactions'); // Navigate to the TransactionsPage
         };
+   const handleReportsClick = () => {
+    navigate('/reports'); // Navigate to the TransactionsPage
+      };
+      const handleMaintainanceClick = () => {
+        navigate('/maintainance'); // Navigate to the TransactionsPage
+          };
+    const handleLogout = () => {
+            // Remove the token from localStorage
+     localStorage.removeItem('token'); // Assuming 'token' is the key for your JWT or session token
+        
+            // Perform any other necessary cleanup actions like clearing user data, etc.
+            
+            // Navigate to the login page or home page
+      navigate('/'); // Or navigate to your login page route
+     };
+        
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-100 to-blue-100 flex flex-col items-center p-8">
@@ -18,10 +34,10 @@ const AdminHomePage = () => {
         </div>
        
         <div className="flex justify-between mt-4">
-          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+        <button  onClick={handleMaintainanceClick}  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
             Maintenance
           </button>
-          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
+          <button  onClick={handleReportsClick}  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
             Reports
           </button>
           <button onClick={handleTransactionsClick} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
@@ -75,7 +91,7 @@ const AdminHomePage = () => {
 
       {/* Footer Section */}
       <div className="w-full max-w-6xl flex justify-end mt-4">
-        <button className="text-red-500 hover:underline">Log Out</button>
+        <button onClick={handleLogout} className="text-red-500 hover:underline">Log Out</button>
       </div>
     </div>
   );

@@ -44,9 +44,7 @@ const BooksList = () => {
         </table>
       </div>
       {/* Footer Section */}
-      <div className="w-full max-w-6xl flex justify-end mt-4">
-        <button className="text-red-500 hover:underline">Log Out</button>
-      </div>
+     
     </div>
   );
 };

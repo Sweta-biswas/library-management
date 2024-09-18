@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Book, User, Lock } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios'; // For making API requests
 
 const LandingPageLibrary = () => {
   const [activeTab, setActiveTab] = useState('user');
@@ -11,18 +12,32 @@ const LandingPageLibrary = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
   
     if (activeTab === 'user') {
       navigate('/user-home-page');
     } else if (activeTab === 'admin') {
-      if (username === 'Admin' && password === 'Admin@123') {
+      try {
+        // Send a POST request to the backend API for admin login
+        const response = await axios.post('http://localhost:5000/api/v1/admin/login', {
+          username,
+          password,
+        });
+  
+        // If login is successful, store the token in localStorage
+        const token = response.data.token; // Assuming the token is sent in the response
+        localStorage.setItem('adminToken', token);
+  
+        // Show a success toast notification
+        toast.success(response.data.message, { position: 'top-right' });
+  
+        // Navigate to the admin home page
         navigate('/admin-home-page');
-      } else {
-        // Use "top-right" as the position instead of the undefined `TOP_RIGHT`
-        toast.error('Invalid Admin Credentials', {
-          position: "top-right", // Use string format for the position
+      } catch (error) {
+        // If there's an error, show a toast notification
+        toast.error(error.response?.data.message || 'Invalid Admin Credentials', {
+          position: 'top-right',
         });
       }
     }
@@ -34,7 +49,9 @@ const LandingPageLibrary = () => {
         {/* Left Side - Features */}
         <div className="w-full lg:w-1/2 lg:pr-8 mb-8 lg:mb-0">
           <div className="flex items-center justify-center lg:justify-start mb-6">
-            <h1 className="text-5xl font-bold text-gray-800"><span className='text-blue-600'>Library</span> Management System</h1>
+            <h1 className="text-5xl font-bold text-gray-800">
+              <span className="text-blue-600">Library</span> Management System
+            </h1>
           </div>
           <p className="text-gray-600 text-2xl mb-6">
             Welcome to our state-of-the-art Library Management System. Efficiently manage your library resources and enhance user experience.
@@ -111,31 +128,19 @@ const LandingPageLibrary = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="off"
                 className="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <Lock className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
             </div>
-            <motion.button
+            <button
               type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
             >
-              Login as {activeTab === 'user' ? 'User' : 'Admin'}
-            </motion.button>
+              {activeTab === 'user' ? 'Login as User' : 'Login as Admin'}
+            </button>
           </motion.form>
-
-          <p className="text-center text-gray-600 mt-4">
-            {activeTab === 'user' ? "Don't have an account? " : "Need assistance? "}
-            <a href="#" className="text-blue-500 hover:underline">
-              {activeTab === 'user' ? 'Sign up' : 'Contact support'}
-            </a>
-          </p>
         </motion.div>
       </div>
-
-      {/* Toast Container for notifications */}
       <ToastContainer />
     </div>
   );

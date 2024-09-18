@@ -7,17 +7,15 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => console.error('Failed to connect to MongoDB Atlas', err));
 
-// User Schema
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  }
+
+const membershipSchema = new mongoose.Schema({
+  FirstName: String,
+  LastName: String,
+  contactNo: String,
+  contactAddress: String,
+  startDate: Date,
+  endDate: Date,
+  membershipDuration: String,
 });
 
-const User = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Membership', membershipSchema);

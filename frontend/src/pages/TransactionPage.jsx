@@ -18,7 +18,7 @@ const TransactionPage = () => {
       
       {/* Mobile Sidebar Toggle */}
       <div className="md:hidden bg-blue-600 text-white p-4 flex justify-between items-center">
-        <h2 className="text-xl font-bold">Library Services</h2>
+        <h2 className="text-xl font-bold">Transactions</h2>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="text-white focus:outline-none"
@@ -47,7 +47,7 @@ const TransactionPage = () => {
           isSidebarOpen ? 'block' : 'hidden'
         } md:block w-full md:w-1/4 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6`}
       >
-        <h2 className="text-2xl font-bold mb-8 text-center">Library Services</h2>
+        <h2 className="text-2xl font-bold mb-8 text-center">Transactions</h2>
         <ul className="space-y-4">
           <li
             className="cursor-pointer p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
@@ -87,6 +87,12 @@ const TransactionPage = () => {
         {activeSection === 'issue' && <IssueBook />}
         {activeSection === 'return' && <ReturnBook />}
         {activeSection === 'fine' && <FinePayment />}
+        {!activeSection && (
+          <div className="text-center text-gray-600 mt-10">
+            <h3 className="text-2xl font-semibold">Welcome to Transaction Services</h3>
+            <p className="mt-4">Please select an option from the sidebar to get started.</p>
+          </div>
+        )}
       </div>
     </div>
   );

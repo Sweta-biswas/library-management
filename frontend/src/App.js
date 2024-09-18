@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import AdminHomePage from './pages/AdminHomePage';
 import UserHomePage from './pages/UserHomePage';
 import TransactionPage from './pages/TransactionPage';
 import ReportsPage from './pages/ReportsPage'
+import Maintainance from './pages/MaintainancePage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/user-home-page" element={<UserHomePage/>} />
           <Route path="/transactions" element={<TransactionPage />} />
           <Route path="/reports" element={<ReportsPage/>} />
+          <Route path="/maintainance" element={<Maintainance/>} />
         </Routes>
       </div>
     </Router>
