@@ -27,7 +27,7 @@ const LandingPageLibrary = () => {
   
         // If login is successful, store the token in localStorage
         const token = response.data.token; // Assuming the token is sent in the response
-        localStorage.setItem('adminToken', token);
+        localStorage.setItem('token', token);
   
         // Show a success toast notification
         toast.success(response.data.message, { position: 'top-right' });
