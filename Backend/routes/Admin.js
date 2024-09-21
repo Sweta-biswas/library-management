@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken'); // For token-based authentication
 const { z } = require('zod'); // Import Zod for schema validation
 const router = express.Router();
-const Membership = require('../db'); // Import Membership model from db.js
+const { Membership, Book } = require('../db'); // Import Membership and Book models from db.js
 const { authMiddleware } = require('../middleware');
 
 // JWT Secret (this should be in your environment variables for security)
@@ -32,32 +32,39 @@ const updateMembershipSchema = z.object({
   membershipDuration: z.enum(['six months', 'one year', 'two years'], { errorMap: () => ({ message: 'Invalid membership duration' }) }),
 });
 
+// Define the add-book schema
+const addBookSchema = z.object({
+  mediaType: z.enum(['book', 'movie'], { message: 'Media type must be either book or movie' }),
+  mediaName: z.string().min(1, { message: 'Media name is required' }),
+  AuthorName: z.string().min(1, { message: 'Author name is required' }),
+  procurementDate: z.string().refine((date) => !isNaN(Date.parse(date)), { message: 'Invalid procurement date' }),
+  quantity: z.preprocess((value) => Number(value), z.number().min(1, { message: 'Quantity must be at least 1' }).default(1)),
+});
+
 // Function to generate a sequential membership ID
 async function generateMembershipId() {
   const lastMembership = await Membership.findOne().sort('-membershipId');
   return lastMembership ? lastMembership.membershipId + 1 : 1; // Ensure this returns a number
 }
 
+// Function to generate a sequential serial number for books
+async function generateSerialNumber() {
+  const lastBook = await Book.findOne().sort('-serialNumber');
+  return lastBook ? lastBook.serialNumber + 1 : 1; // Ensure the serial number increments correctly
+}
 
 // Admin Login Route
 router.post('/login', async (req, res) => {
   try {
-    // Parse and validate the request body using Zod
     const { username, password } = loginSchema.parse(req.body);
 
-    // Static check: Admin login with predefined credentials
     if (username === 'Admin' && password === 'Admin@123') {
-      // Generate a token
       const token = jwt.sign({ username }, JWT_SECRET);
-
-      // Send the token as a response
       return res.json({ token, message: 'Admin Logged In Successfully' });
     } else {
-      // Return invalid credentials message
       return res.status(401).json({ message: 'Invalid Username or Password' });
     }
   } catch (error) {
-    // If validation fails, Zod will throw an error
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: error.errors });
     }
@@ -78,63 +85,72 @@ router.post('/add-membership', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Aadhar card number already exists' });
     }
 
-    // Generate a new membership ID
-    const membershipId =(await generateMembershipId());
-  
-
-    // Create a new membership document with the generated ID
+    const membershipId = await generateMembershipId();
     const newMembership = new Membership({ ...validatedData, membershipId });
 
     await newMembership.save();
-
     res.status(201).json({ message: 'Membership added successfully', membershipId });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // Return validation errors to the client
-      console.log(error.message)
       return res.status(400).json({ message: 'Validation Failed', errors: error.errors });
     }
-
     console.error(error.message);
     res.status(500).json({ message: 'Server Error' });
   }
 });
 
-
 // Update Membership Route
 router.put('/update-membership', authMiddleware, async (req, res) => {
   try {
-    // Convert membershipId to a number before validating
     req.body.membershipId = Number(req.body.membershipId);
-
-    // Validate the request body using Zod
     const validatedData = updateMembershipSchema.parse(req.body);
 
-    // Find the member by membership ID
     const existingMember = await Membership.findOne({ membershipId: validatedData.membershipId });
 
     if (!existingMember) {
       return res.status(404).json({ message: 'Membership not found' });
     }
 
-    // Update the member's start date, end date, and membership duration
     existingMember.startDate = validatedData.startDate;
     existingMember.endDate = validatedData.endDate;
     existingMember.membershipDuration = validatedData.membershipDuration;
 
-    // Save the updated member
     await existingMember.save();
-
     res.status(200).json({ message: 'Membership updated successfully' });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // Return validation errors to the client
       return res.status(400).json({ message: 'Validation Failed', errors: error.errors });
     }
-
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
 
-module.exports = router; 
+// Add Books Route
+router.post('/add-books', authMiddleware, async (req, res) => {
+  try {
+    const validatedData = addBookSchema.parse(req.body);
+
+    // Generate a sequential serial number and set the default status to 'Available'
+    const serialNumber = await generateSerialNumber();
+
+    const newBook = new Book({
+      ...validatedData,
+      serialNumber,
+      status: 'Available', // Default status
+    });
+
+    await newBook.save();
+
+    res.status(201).json({ message: 'Book added successfully', serialNumber });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Validation Error:', error.errors); 
+      return res.status(400).json({ message: 'Validation Failed', errors: error.errors });
+    }
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+module.exports = router;

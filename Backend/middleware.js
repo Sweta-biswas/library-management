@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
     
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-       
+        
         return res.status(403).json({});
     }
 
@@ -25,6 +25,7 @@ const authMiddleware = (req, res, next) => {
         // console.log(req.userId)
         next()
     } else {
+        
         return res.status(403).json({});
     }
 } catch (err) {
