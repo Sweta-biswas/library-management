@@ -1,21 +1,48 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateBookOrMovie = () => {
-  const [mediaType, setMediaType] = useState('book'); // For selecting Book or Movie
-  const [mediaName, setMediaName] = useState(''); // Textbox or dropdown for book/movie name
-  const [serialNo, setSerialNo] = useState(''); // Textbox for serial number
-  const [status, setStatus] = useState('available'); // Dropdown for status
-  const [updateDate, setUpdateDate] = useState(''); // Calendar for date
+  const [type, setType] = useState('Book');  // 'Book' or 'Movie'
+  const [name, setName] = useState('');
+  const [serialNo, setSerialNo] = useState('');
+  const [status, setStatus] = useState('Available');
+  const [date, setDate] = useState('');
 
-  const handleConfirm = () => {
-    // Handle confirm logic
-    console.log({
-      mediaType,
-      mediaName,
-      serialNo,
-      status,
-      updateDate,
-    });
+  const handleConfirm = async () => {
+    if (!date) {
+      toast.error('Please select a valid date.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await axios.put(
+        'http://localhost:5000/api/v1/admin/update-book-movie',
+        {
+          type,      // Changed from mediaType to type
+          name,      // Changed from mediaName to name
+          serialNo,  // Changed from serialNumber to serialNo
+          status,
+          date,      // Changed from updateDate to date
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success(response.data.message);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
+    }
   };
 
   return (
@@ -29,9 +56,9 @@ const UpdateBookOrMovie = () => {
           <label className="flex items-center">
             <input
               type="radio"
-              value="book"
-              checked={mediaType === 'book'}
-              onChange={(e) => setMediaType(e.target.value)}
+              value="Book"
+              checked={type === 'Book'}
+              onChange={(e) => setType(e.target.value)}
               className="mr-2"
             />
             Book
@@ -39,9 +66,9 @@ const UpdateBookOrMovie = () => {
           <label className="flex items-center">
             <input
               type="radio"
-              value="movie"
-              checked={mediaType === 'movie'}
-              onChange={(e) => setMediaType(e.target.value)}
+              value="Movie"
+              checked={type === 'Movie'}
+              onChange={(e) => setType(e.target.value)}
               className="mr-2"
             />
             Movie
@@ -54,20 +81,15 @@ const UpdateBookOrMovie = () => {
         <label className="block mb-2 text-gray-600">Book/Movie Name:</label>
         <input
           type="text"
-          value={mediaName}
-          onChange={(e) => setMediaName(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
         />
-        {/* You can also replace this text box with a dropdown if necessary */}
-        {/* <select className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300">
-          <option>Book 1</option>
-          <option>Book 2</option>
-        </select> */}
       </div>
 
       {/* Serial No */}
       <div className="mb-6">
-        <label className="block mb-2 text-gray-600">Serial No:</label>
+        <label className="block mb-2 text-gray-600">Serial Number:</label>
         <input
           type="text"
           value={serialNo}
@@ -84,10 +106,10 @@ const UpdateBookOrMovie = () => {
           onChange={(e) => setStatus(e.target.value)}
           className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
         >
-          <option value="available">Available</option>
-          <option value="checked out">Checked Out</option>
-          <option value="lost">Lost</option>
-          <option value="damaged">Damaged</option>
+          <option value="Available">Available</option>
+          <option value="Checked Out">Checked Out</option>
+          <option value="Lost">Lost</option>
+          <option value="Damaged">Damaged</option>
         </select>
       </div>
 
@@ -96,8 +118,8 @@ const UpdateBookOrMovie = () => {
         <label className="block mb-2 text-gray-600">Date:</label>
         <input
           type="date"
-          value={updateDate}
-          onChange={(e) => setUpdateDate(e.target.value)}
+          value={date}
+          onChange={(e) => setDate(e.target.value)} // Update date state
           className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300"
         />
       </div>
@@ -108,13 +130,13 @@ const UpdateBookOrMovie = () => {
         </button>
         <button
           onClick={handleConfirm}
-          className="bg-blue-500 text-white py-2 px-6 rounded-xl shadow hover:bg-green-600 transition duration-300"
+          className="bg-blue-500 text-white py-2 px-6 rounded-xl shadow hover:bg-blue-600 transition duration-300"
         >
           Confirm
         </button>
       </div>
 
-      
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

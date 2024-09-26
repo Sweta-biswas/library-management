@@ -1,81 +1,48 @@
-const express = require("express");
-const { User } = require("../db");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { z } = require("zod");
+const express = require('express');
+const { z } = require('zod');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const { User } = require('../db');
+const router = express.Router();
 require('dotenv').config();
 
-const router = express.Router();
-
-const userBody = z.object({
-    email: z.string().email(),
-    password: z.string().min(6)
+const loginSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1),
 });
 
-// JWT Secret Key
-const JWT_SECRET = process.env.JWT_SECRET;
+router.post('/userlogin', async (req, res) => {
+  try {
+    console.log(req.body);
+    const { username, password } = loginSchema.parse(req.body);
+    const name=username;
 
-// User Signup
-router.post("/signup", async (req, res) => {
-    const parsedBody = userBody.safeParse(req.body);
+    // Find the user in the database by username
+    const user = await User.findOne({ name });
 
-    if (!parsedBody.success) {
-        return res.status(411).json({
-            message: 'Incorrect input'
-        });
+    // If the user doesn't exist, return an error
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    const { email, password } = req.body;
+    // Compare the hashed password in the database with the password provided by the user
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(409).json({ message: 'User already exists' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ email, password: hashedPassword });
-        await user.save();
-
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-        res.status(201).json({ token, userId: user._id });
-    } catch (error) {
-        
-        res.status(500).json({ message: 'Error signing up user' });
-    }
-});
-
-// User Signin
-router.post("/signin", async (req, res) => {
-    const parsedBody = userBody.safeParse(req.body);
-
-    if (!parsedBody.success) {
-        
-        return res.status(411).json({
-            message: 'Incorrect input'
-        });
+    // If the passwords don't match, return an error
+    if (!passwordMatch) {
+      return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    const { email, password } = req.body;
+    // If the username and password are valid, create a JWT token
+    const secret = process.env.JWT_SECRET;
+    const token = jwt.sign({ username }, secret);
 
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-        res.status(200).json({ token, userId: user._id });
-    } catch (error) {
-        res.status(500).json({ message: 'Error signing in user' });
-    }
+    // Return the token to the client
+    res.json({ token, message: 'Login successful' });
+  } catch (error) {
+    // If there's an error, return a 500 status code and the error message
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;

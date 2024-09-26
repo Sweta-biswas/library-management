@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Assuming you are using react-router for navigation
+import { LogOut } from 'lucide-react'; // Import the LogOut icon from react-feather or another icon package
 import BookAvailability from '../components/BookAvailability';
 import IssueBook from '../components/IssueBook';
 import ReturnBook from '../components/ReturnBook';
@@ -7,11 +9,19 @@ import FinePayment from '../components/FinePayment';
 const TransactionPage = () => {
   const [activeSection, setActiveSection] = useState(''); // Track which section to display
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile sidebar toggle
+  const navigate = useNavigate(); // For navigation after logout
 
   const handleBookAvailabilityClick = () => setActiveSection('availability');
   const handleIssueBookClick = () => setActiveSection('issue');
   const handleReturnBookClick = () => setActiveSection('return');
   const handleFinePaymentClick = () => setActiveSection('fine');
+
+  const handleLogout = () => {
+    // Remove the token from localStorage
+    localStorage.removeItem('token');
+    // Redirect to the homepage
+    navigate('/');
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -73,10 +83,14 @@ const TransactionPage = () => {
           >
             Fine Payment
           </li>
-          <li
-            className="cursor-pointer p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
-          >
-            Log Out
+          <li>
+            <button
+              onClick={handleLogout} // Logout handler
+              className="flex items-center w-full p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
+            >
+              <LogOut size={20} className="mr-2" />
+              <span className="font-semibold">Log Out</span>
+            </button>
           </li>
         </ul>
       </div>

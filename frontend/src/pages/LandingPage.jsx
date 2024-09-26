@@ -14,9 +14,30 @@ const LandingPageLibrary = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     if (activeTab === 'user') {
-      navigate('/user-home-page');
+      try {
+        // Send a POST request to the backend API for user login
+        const response = await axios.post('http://localhost:5000/api/v1/user/userlogin', {
+          username,
+          password,
+        });
+
+        // If login is successful, store the token in localStorage
+        const token = response.data.token; // Assuming the token is sent in the response
+        localStorage.setItem('token', token);
+
+        // Show a success toast notification
+        toast.success(response.data.message, { position: 'top-right' });
+
+        // Navigate to the user home page
+        navigate('/user-home-page');
+      } catch (error) {
+        // If there's an error, show a toast notification
+        toast.error(error.response?.data.message || 'Invalid User Credentials', {
+          position: 'top-right',
+        });
+      }
     } else if (activeTab === 'admin') {
       try {
         // Send a POST request to the backend API for admin login
@@ -24,14 +45,14 @@ const LandingPageLibrary = () => {
           username,
           password,
         });
-  
+
         // If login is successful, store the token in localStorage
         const token = response.data.token; // Assuming the token is sent in the response
         localStorage.setItem('token', token);
-  
+
         // Show a success toast notification
         toast.success(response.data.message, { position: 'top-right' });
-  
+
         // Navigate to the admin home page
         navigate('/admin-home-page');
       } catch (error) {
@@ -42,7 +63,7 @@ const LandingPageLibrary = () => {
       }
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center p-4">
       <div className="w-full max-w-screen-xl mx-auto flex flex-col lg:flex-row items-center justify-center">

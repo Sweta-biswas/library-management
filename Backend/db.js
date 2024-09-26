@@ -21,32 +21,121 @@ const membershipSchema = new mongoose.Schema({
 });
 
 // Define the books/movies schema
+// Define the Book schema
 const bookSchema = new mongoose.Schema({
-  mediaType: { type: String, enum: ['book', 'movie'], required: true }, // 'book' or 'movie'
-  mediaName: { type: String, required: true },
-  AuthorName: { type: String, required: true }, // Can represent the author or director
+  name: { type: String, required: true, unique: true },
+  author: { type: String, required: true }, // Add this line
   procurementDate: { type: Date, required: true },
-  quantity: { type: Number, default: 1 }, // Default is 1
-  serialNumber: { type: Number, unique: true }, // Sequential serial number
-  status: { type: String, default: 'Available' }, // Default status is 'Available'
+  quantity: { type: Number, required: true },
+  serialNumber: { type: Number, required: true, unique: true },
+  status: { type: String, default: 'Available' }
 });
 
-// Pre-save hook to generate a sequential serial number
-bookSchema.pre('save', async function (next) {
-  const doc = this;
 
-  if (doc.isNew) {
-    // Get the last book or movie's serial number
-    const lastBook = await Book.findOne().sort({ serialNumber: -1 });
+// Define the Movie schema
+const movieSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  director: { type: String, required: true }, // Add this line
+  procurementDate: { type: Date, required: true },
+  quantity: { type: Number, required: true },
+  serialNumber: { type: Number, required: true, unique: true },
+  status: { type: String, default: 'Available' }
+});
 
-    // If no books exist yet, start serialNumber at 1, otherwise increment the last serialNumber
-    doc.serialNumber = lastBook ? lastBook.serialNumber + 1 : 1;
+
+// Define the user schema for user management
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  password: { type: String, required: function() { return this.isNew; } }, // Password is required for new users
+  status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
+  admin: { type: Boolean, default: false },
+  });
+
+const issueSchema = new mongoose.Schema({
+  itemId: {
+    type: String,
+    required: true,
+   
+  },
+  itemType: {
+    type: String,
+    required: true,
+    enum: ['Book', 'Movie']
+  },
+  issueDate: {
+    type: Date,
+    required: true
+  },
+  returnDate: {
+    type: Date,
+    required: true
+  },
+  remarks: {
+    type: String,
+    default: ''
+  },
+  status: {
+    type: String,
+    enum: ['issued', 'returned'],
+    default: 'issued'
+  },
+  username: {
+    type: String,
+    required: true
   }
-  next();
 });
+
+const fineSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Book', 'Movie'],
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  authorOrDirector: {
+    type: String,
+    required: true,
+  },
+  serialNumber: {
+    type: String,
+    required: true,
+  },
+  issueDate: {
+    type: Date,
+    required: true,
+  },
+  returnDate: {
+    type: Date,
+    required: true,
+  },
+  actualReturnDate: {
+    type: Date,
+    required: true,
+  },
+  fine: {
+    type: Number,
+    required: true,
+  },
+  finePaid: {
+    type: Boolean,
+    required: true,
+  },
+  remarks: {
+    type: String,
+  },
+});
+
+
 
 // Check if the models are already compiled to prevent OverwriteModelError
 const Membership = mongoose.models.Membership || mongoose.model('Membership', membershipSchema);
 const Book = mongoose.models.Book || mongoose.model('Book', bookSchema);
+const Movie = mongoose.models.Movie || mongoose.model('Movie', movieSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+const Issue = mongoose.models.Issue|| mongoose.model('Issue', issueSchema);
+const Fine = mongoose.models. Fine || mongoose.model('Fine', fineSchema);
 
-module.exports = { Membership, Book };
+module.exports = { Membership, Book, User, Movie, Issue, Fine };

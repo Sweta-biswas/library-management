@@ -1,98 +1,91 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { LogOut, Settings, FileText, DollarSign } from 'lucide-react';
 
 const AdminHomePage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleTransactionsClick = () => {
-    navigate('/transactions'); // Navigate to the TransactionsPage
-        };
-   const handleReportsClick = () => {
-    navigate('/reports'); // Navigate to the TransactionsPage
-      };
-      const handleMaintainanceClick = () => {
-        navigate('/maintainance'); // Navigate to the TransactionsPage
-          };
-    const handleLogout = () => {
-            // Remove the token from localStorage
-     localStorage.removeItem('token'); // Assuming 'token' is the key for your JWT or session token
-        
-            // Perform any other necessary cleanup actions like clearing user data, etc.
-            
-            // Navigate to the login page or home page
-      navigate('/'); // Or navigate to your login page route
-     };
-        
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
+  const buttonVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.2 } },
+    tap: { scale: 0.95 }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-100 to-blue-100 flex flex-col items-center p-8">
-      {/* Header Section */}
-      <div className="w-full max-w-6xl bg-white shadow-md rounded-lg p-4 mb-8">
-        <div className="flex justify-between items-center">
-          <div className="text-xl font-bold text-gray-800">Admin Home Page</div>
-          <button className="text-gray-700 hover:text-blue-500">Back</button>
+    <div className="min-h-screen bg-gradient-to-r from-white to-blue-100 flex flex-col items-center justify-center p-8">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-6xl bg-white bg-opacity-90 shadow-lg rounded-lg p-10 mb-8" // Increased padding for a taller box
+      >
+        <div className="flex justify-between items-center mb-8">
+          <motion.h1
+            initial={{ x: -20 }}
+            animate={{ x: 0 }}
+            className="text-3xl font-bold text-gray-800"
+          >
+            Admin Dashboard
+          </motion.h1>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="text-gray-700 hover:text-blue-500 transition-colors duration-200"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </motion.button>
         </div>
-       
-        <div className="flex justify-between mt-4">
-        <button  onClick={handleMaintainanceClick}  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-            Maintenance
-          </button>
-          <button  onClick={handleReportsClick}  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-            Reports
-          </button>
-          <button onClick={handleTransactionsClick} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-            Transactions
-          </button>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { title: 'Maintenance', icon: Settings, path: '/maintainance' },
+            { title: 'Reports', icon: FileText, path: '/reports' },
+            { title: 'Transactions', icon: DollarSign, path: '/transactions' }
+          ].map((item, index) => (
+            <motion.button
+              key={item.title}
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-300 text-white py-8 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              onClick={() => handleNavigation(item.path)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <item.icon size={32} className="mb-2" />
+              <span className="text-lg font-semibold">{item.title}</span>
+            </motion.button>
+          ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Table Section */}
-      <div className="w-full max-w-6xl bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Product Details</h2>
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full text-left text-gray-800">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 border border-gray-300">Code No From</th>
-                <th className="px-4 py-2 border border-gray-300">Code No To</th>
-                <th className="px-4 py-2 border border-gray-300">Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 border border-gray-300">SC(B/M)000001</td>
-                <td className="px-4 py-2 border border-gray-300">SC(B/M)000000</td>
-                <td className="px-4 py-2 border border-gray-300">Science</td>
-              </tr>
-              <tr className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 border border-gray-300">EC(B/M)000001</td>
-                <td className="px-4 py-2 border border-gray-300">EC(B/M)000000</td>
-                <td className="px-4 py-2 border border-gray-300">Economics</td>
-              </tr>
-              <tr className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 border border-gray-300">FC(B/M)000001</td>
-                <td className="px-4 py-2 border border-gray-300">FC(B/M)000000</td>
-                <td className="px-4 py-2 border border-gray-300">Fiction</td>
-              </tr>
-              <tr className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 border border-gray-300">CH(B/M)000001</td>
-                <td className="px-4 py-2 border border-gray-300">CH(B/M)000000</td>
-                <td className="px-4 py-2 border border-gray-300">Children</td>
-              </tr>
-              <tr className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 border border-gray-300">PD(B/M)000001</td>
-                <td className="px-4 py-2 border border-gray-300">PD(B/M)000000</td>
-                <td className="px-4 py-2 border border-gray-300">Personal Development</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Footer Section */}
-      <div className="w-full max-w-6xl flex justify-end mt-4">
-        <button onClick={handleLogout} className="text-red-500 hover:underline">Log Out</button>
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="w-full max-w-6xl flex justify-end mt-4"
+      >
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleLogout}
+          className="flex items-center bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600 transition-colors duration-200"
+        >
+          <LogOut size={18} className="mr-2" />
+          Log Out
+        </motion.button>
+      </motion.div>
     </div>
   );
 };
