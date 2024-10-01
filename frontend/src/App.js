@@ -6,6 +6,7 @@ import UserHomePage from './pages/UserHomePage';
 import TransactionPage from './pages/TransactionPage';
 import ReportsPage from './pages/ReportsPage'
 import Maintainance from './pages/MaintainancePage';
+import Protected from './components/protected';
 
 function App() {
   return (
@@ -13,11 +14,11 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/" element={<LandingPage/>} />
-          <Route path="/admin-home-page" element={<AdminHomePage/>} />
-          <Route path="/user-home-page" element={<UserHomePage/>} />
-          <Route path="/transactions" element={<TransactionPage />} />
-          <Route path="/reports" element={<ReportsPage/>} />
-          <Route path="/maintainance" element={<Maintainance/>} />
+          <Route path="/admin-home-page/*" element={<Protected Component={AdminHomePage}/>}/>
+          <Route path="/user-home-page/*" element={<Protected Component={UserHomePage}/>}/>
+          <Route path="/transactions"  element={<Protected Component={TransactionPage}/>}/>
+          <Route path="/reports"  element={<Protected Component={ReportsPage}/>}/>
+          <Route path="/maintainance"  element={<Protected Component={Maintainance}/>}/>
         </Routes>
       </div>
     </Router>

@@ -1,18 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Overdue = () => {
-  // Sample data for the books (you can replace this with actual data from props or an API)
-  const books = [
-    { serialNo: 1, name: 'Book One', MembershipId: 'M01', IssueDate: '2022-01-01', ReturnDate: '2023-01-01', fine: '$12' },
-    { serialNo: 2, name: 'Book', MembershipId: 'M02',IssueDate: '2023-01-01', ReturnDate: '2023-02-15', fine: '$12' },
-    { serialNo: 3, name: 'Book Three', MembershipId: 'M03',IssueDate: '2023-02-01', ReturnDate: '2023-03-10', fine: '$12' },
-    // Add more book data here...
-  ];
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOverdueBooks = async () => {
+      try {
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
+
+        // Make the API call to fetch overdue books with the token in the Authorization header
+        const response = await axios.get('http://localhost:5000/api/v1/report/overdue', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log(response.data);
+
+        // Set the books data from the response
+        setBooks(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching overdue books:', err);
+        setError('Failed to load data');
+        setLoading(false);
+      }
+    };
+
+    fetchOverdueBooks();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg">
-      <h2 className="text-xl font-bold mb-4">OverDue Returns</h2>
-      
+      <h2 className="text-xl font-bold mb-4">Overdue Returns</h2>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead className="bg-blue-500 text-white">
@@ -23,24 +56,22 @@ const Overdue = () => {
               <th className="py-2 px-4 border">Date of Issue</th>
               <th className="py-2 px-4 border">Date of Return</th>
               <th className="py-2 px-4 border">Fine Calculations</th>
-             
             </tr>
           </thead>
           <tbody>
             {books.map((book, index) => (
               <tr key={index} className="text-center">
-                <td className="py-2 px-4 border">{book.serialNo}</td>
+                <td className="py-2 px-4 border">{book.serialNumber}</td>
                 <td className="py-2 px-4 border">{book.name}</td>
-                <td className="py-2 px-4 border">{book.MembershipId}</td>
-                <td className="py-2 px-4 border">{book.IssueDate}</td>
-                <td className="py-2 px-4 border">{book.ReturnDate}</td>
+                <td className="py-2 px-4 border">{book.membershipId}</td>
+                <td className="py-2 px-4 border">{new Date(book.issueDate).toLocaleDateString()}</td>
+                <td className="py-2 px-4 border">{new Date(book.returnDate).toLocaleDateString()}</td>
                 <td className="py-2 px-4 border">{book.fine}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      
     </div>
   );
 };

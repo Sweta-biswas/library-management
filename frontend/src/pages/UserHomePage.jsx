@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LogOut, FileText, DollarSign, User } from 'lucide-react';
+import { LogOut, FileText, DollarSign } from 'lucide-react';
 
 const UserHomePage = () => {
   const navigate = useNavigate();
@@ -57,31 +57,27 @@ const UserHomePage = () => {
               Back
             </motion.button>
           </div>
-          
+
+          {/* Updated grid with View Reports and Transactions boxes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <UserInfoCard />
-            <ActivitySummary />
+            {[
+              { title: 'View Reports', icon: FileText, path: '/reports', color: 'from-blue-200 to-blue-500' },
+              { title: 'Transactions', icon: DollarSign, path: '/transactions', color: 'from-blue-200 to-indigo-500' }
+            ].map((item) => (
+              <motion.button
+                key={item.title}
+                variants={itemVariants}
+                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.98 }}
+                className={`flex items-center justify-center bg-gradient-to-r ${item.color} text-white py-6 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}
+                onClick={() => handleNavigation(item.path)}
+              >
+                <item.icon size={24} className="mr-3" />
+                <span className="text-lg font-semibold">{item.title}</span>
+              </motion.button>
+            ))}
           </div>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            { title: 'View Reports', icon: FileText, path: '/reports', color: 'from-blue-200 to-blue-500' },
-            { title: 'Transactions', icon: DollarSign, path: '/transactions', color: 'from-blue-200 to-indigo-500 ' }
-          ].map((item) => (
-            <motion.button
-              key={item.title}
-              variants={itemVariants}
-              whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.98 }}
-              className={`flex items-center justify-center bg-gradient-to-r ${item.color} text-white py-6 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}
-              onClick={() => handleNavigation(item.path)}
-            >
-              <item.icon size={24} className="mr-3" />
-              <span className="text-lg font-semibold">{item.title}</span>
-            </motion.button>
-          ))}
-        </div>
 
         <motion.div
           variants={itemVariants}
@@ -101,29 +97,5 @@ const UserHomePage = () => {
     </div>
   );
 };
-
-const UserInfoCard = () => (
-  <div className="bg-gradient-to-r from-blue-200 to-blue-100 rounded-lg p-6 shadow-md">
-    <div className="flex items-center mb-4">
-      <User size={40} className="text-blue-600 mr-4" />
-      <div>
-        <h2 className="text-xl font-semibold text-gray-800">Sweta Biswas</h2>
-        <p className="text-gray-600">swetabiswas@gmail.com</p>
-      </div>
-    </div>
-    <p className="text-gray-700">Account Status: <span className="font-semibold text-green-600">Active</span></p>
-  </div>
-);
-
-const ActivitySummary = () => (
-  <div className="bg-gradient-to-r from-indigo-200 to-purple-100 rounded-lg p-6 shadow-md">
-    <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
-    <ul className="space-y-2">
-      <li className="text-gray-700">Last login: 2 hours ago</li>
-      <li className="text-gray-700">Reports generated: 5 this week</li>
-      <li className="text-gray-700">Transactions: 3 pending</li>
-    </ul>
-  </div>
-);
 
 export default UserHomePage;

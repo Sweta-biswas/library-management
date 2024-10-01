@@ -1,13 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Active = () => {
-  // Sample data for the books (you can replace this with actual data from props or an API)
-  const books = [
-    { serialNo: 1, name: 'Book One', MembershipId: 'M01', IssueDate: '2022-01-01', ReturnDate: '2023-01-01' },
-    { serialNo: 2, name: 'Movie One', MembershipId: 'M02',IssueDate: '2023-01-01', ReturnDate: '2023-02-15' },
-    { serialNo: 3, name: 'Book Three', MembershipId: 'M03',IssueDate: '2023-02-01', ReturnDate: '2023-03-10' },
-    // Add more book data here...
-  ];
+  const [issues, setIssues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch active issues data from the API
+  useEffect(() => {
+    const fetchActiveIssues = async () => {
+      try {
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
+
+        // Make the API call with the token in the headers
+        const response = await axios.get('http://localhost:5000/api/v1/report/active-issue', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Set the fetched data to the state
+        setIssues(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError('Failed to fetch active issues');
+        setLoading(false);
+      }
+    };
+
+    fetchActiveIssues();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg">
@@ -17,29 +48,26 @@ const Active = () => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead className="bg-blue-500 text-white">
             <tr>
-              <th className="py-2 px-4 border">Serial No Book/Movie</th>
+              <th className="py-2 px-4 border">Serial No</th>
               <th className="py-2 px-4 border">Name of Book/Movie</th>
               <th className="py-2 px-4 border">Membership Id</th>
               <th className="py-2 px-4 border">Date of Issue</th>
               <th className="py-2 px-4 border">Date of Return</th>
-             
             </tr>
           </thead>
           <tbody>
-            {books.map((book, index) => (
+            {issues.map((issue, index) => (
               <tr key={index} className="text-center">
-                <td className="py-2 px-4 border">{book.serialNo}</td>
-                <td className="py-2 px-4 border">{book.name}</td>
-                <td className="py-2 px-4 border">{book.MembershipId}</td>
-                <td className="py-2 px-4 border">{book.IssueDate}</td>
-                <td className="py-2 px-4 border">{book.ReturnDate}</td>
+                <td className="py-2 px-4 border">{issue.serialNumber}</td>
+                <td className="py-2 px-4 border">{issue.name}</td>
+                <td className="py-2 px-4 border">{issue.membershipId}</td>
+                <td className="py-2 px-4 border">{new Date(issue.issueDate).toLocaleDateString()}</td>
+                <td className="py-2 px-4 border">{new Date(issue.returnDate).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-     
-      
     </div>
   );
 };

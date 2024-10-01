@@ -1,21 +1,31 @@
 import React, { useState } from 'react';
+import {  LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Import useNa
 import ActiveIssue from '../components/ActiveIssue';
 import MembershipList from '../components/Membership';
 import MoviesList from '../components/Movies';
 import BooksList from '../components/Books';
 import OverDueReturns from '../components/Overdue';
-import PendingIssue from '../components/PendingIssue';
+
 
 const ReportsPage = () => {
   const [activeSection, setActiveSection] = useState(''); // Track which section to display
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile sidebar toggle
-
+  const navigate = useNavigate(); 
   const handleActiveIssueClick = () => setActiveSection('activeissue');
   const handleMembershipClick = () => setActiveSection('membership');
   const handleMoviesClick = () => setActiveSection('movies');
   const handleBooksClick = () => setActiveSection('books');
   const handleOverdueClick = () => setActiveSection('overdue');
-  const handlePendingIssueClick = () => setActiveSection('pendingissue');
+  const handleLogout = () => {
+    // Remove the token from localStorage
+    localStorage.removeItem('token'); // Assuming 'token' is the key for your JWT or session token
+
+    // Perform any other necessary cleanup actions like clearing user data, etc.
+    
+    // Navigate to the login page or home page
+    navigate('/'); // Or navigate to your login page route
+};
 
 
   return (
@@ -84,18 +94,16 @@ const ReportsPage = () => {
           >
             Overdue Returns
           </li>
-          <li
-            className="cursor-pointer p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
-            onClick={handlePendingIssueClick}
-          >
-            Pending Issues Request
-          </li>
-          <li
-            className="cursor-pointer p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
-            
-          >
-            Log Out
-          </li>
+          <li>
+            <button
+          onClick={handleLogout} // Logout handler
+          className="flex items-center w-full p-3 hover:bg-blue-600 rounded-lg transition duration-300 transform hover:scale-105"
+        >
+          <LogOut size={20} className="mr-2" />
+          <span className="font-semibold">Log Out</span>
+        </button>
+
+            </li>
         </ul>
       </div>
 
@@ -106,7 +114,7 @@ const ReportsPage = () => {
         {activeSection === 'movies' && <MoviesList />}
         {activeSection === 'books' && <BooksList />}
         {activeSection === 'overdue' && <OverDueReturns/>}
-        {activeSection === 'pendingissue' && <PendingIssue  />}
+        
 
         {!activeSection && (
           <div className="text-center text-gray-600 mt-10">

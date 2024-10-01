@@ -60,56 +60,62 @@ const payFineSchema = z.object({
   fine: z.string(),
   finePaid: z.boolean(),
   remarks: z.string().optional(),
+ 
 });
 
 
 router.get('/books/availability', authMiddleware, async (req, res) => {
-    try {
-      console.log('Request Query:', req.query); // Log request query to check incoming data
-      
-      const { personId, itemId } = bookAvailabilitySchema.parse(req.query);
-      
-      console.log('Parsed Data:', { personId, itemId }); // Log parsed data to check if Zod parsing worked correctly
-  
-      let book;
-      if (itemId) {
-        book = await Book.findOne({ name: itemId });
-        console.log('Book Found by itemId:', book); // Log if book is found by itemId
-      } else if (personId) {
-        book = await Book.find({ author: personId });
-        console.log('Book Found by personId:', book); // Log if book is found by personId
-      }
-  
-      if (!book || book.length === 0) {
-        console.log('Book Not Found'); // Log if no book is found
-        return res.status(404).json({ error: 'Book not found' });
-      }
-  
-      if (Array.isArray(book)) {
-        return res.json(book.map(b => ({
-          name: b.name,
-          author: b.author,
-          serialNumber: b.serialNumber,
-          status: b.status
-        })));
-      } else {
-        return res.json({
-          name: book.name,
-          author: book.author,
-          serialNumber: book.serialNumber,
-          status: book.status
-        });
-      }
-    } catch (error) {
-      // Handle Zod validation errors
-      if (error instanceof z.ZodError) {
-        console.log('Zod Validation Error:', error.issues); // Log Zod validation errors
-        return res.status(400).json({ error: error.issues });
-      }
-      console.error('Error in /books/availability route:', error); // Log any other error
-      res.status(500).json({ error: 'Internal server error' });
+  try {
+    console.log('Request Query:', req.query); // Log request query to check incoming data
+
+    const { personId, itemId } = bookAvailabilitySchema.parse(req.query);
+
+    console.log('Parsed Data:', { personId, itemId }); // Log parsed data to check if Zod parsing worked correctly
+
+    let book;
+    if (itemId) {
+      // Decode the itemId if it has URL encoding
+      const decodedItemId = decodeURIComponent(itemId);
+      book = await Book.findOne({ name: decodedItemId });
+      console.log('Book Found by itemId:', book); // Log if book is found by itemId
+    } else if (personId) {
+      // Decode the personId if necessary (not typical for names, but just in case)
+      const decodedPersonId = decodeURIComponent(personId);
+      book = await Book.find({ author: decodedPersonId });
+      console.log('Book Found by personId:', book); // Log if book is found by personId
     }
-  });
+
+    if (!book || book.length === 0) {
+      console.log('Book Not Found'); // Log if no book is found
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    if (Array.isArray(book)) {
+      return res.json(book.map(b => ({
+        name: b.name,
+        author: b.author,
+        serialNumber: b.serialNumber,
+        status: b.status
+      })));
+    } else {
+      return res.json({
+        name: book.name,
+        author: book.author,
+        serialNumber: book.serialNumber,
+        status: book.status
+      });
+    }
+  } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      console.log('Zod Validation Error:', error.issues); // Log Zod validation errors
+      return res.status(400).json({ error: error.issues });
+    }
+    console.error('Error in /books/availability route:', error); // Log any other error
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
   
 
 router.get('/movies/availability', authMiddleware, async (req, res) => {
@@ -385,8 +391,11 @@ router.post('/calculate-fine', authMiddleware, async (req, res) => {
 router.post('/pay-fine', authMiddleware, async (req, res) => {
   try {
     // Parse and validate the incoming request data using the Zod schema
-    const { type, name, authorOrDirector, serialNumber, issueDate, returnDate, actualReturnDate, fine, finePaid, remarks } = payFineSchema.parse(req.body);
+    const { type, name, authorOrDirector, serialNumber, issueDate, returnDate, actualReturnDate, fine, finePaid, remarks} = payFineSchema.parse(req.body);
+   
+    const username = req.username;
 
+    
     let issue;
     if (type === 'Book') {
       // Search for the Book document with the matching name, author, and serialNumber
@@ -421,7 +430,7 @@ router.post('/pay-fine', authMiddleware, async (req, res) => {
     }
     
     if (!issue) {
-      console.log(issue)
+      
       return res.status(404).json({ error: 'Issue not found' });
     }
 
@@ -448,6 +457,7 @@ router.post('/pay-fine', authMiddleware, async (req, res) => {
         fine,
         finePaid,
         remarks,
+        username,
       });
     
       // Save the Fine document to the database

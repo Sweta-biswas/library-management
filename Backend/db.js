@@ -126,6 +126,10 @@ const fineSchema = new mongoose.Schema({
   remarks: {
     type: String,
   },
+  username: {
+    type: String,
+    required: true, // Assuming every fine needs to be associated with a user
+  },
 });
 
 

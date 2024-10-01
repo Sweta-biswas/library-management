@@ -76,7 +76,7 @@ const MaintainencePage = () => {
           isSidebarOpen ? 'block' : 'hidden'
         } md:block w-full md:w-1/4 bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6`}
       >
-        <h2 className="text-2xl font-bold mb-8 text-center">HouseKeeping</h2>
+        <h2 className="text-2xl font-bold mb-8 text-center">Maintainance</h2>
         <nav>
           <ul className="space-y-2">
             {menuItems.map((menu, index) => (
@@ -128,7 +128,7 @@ const MaintainencePage = () => {
         {activeSection === 'usermanagement' && <User />}
         {!activeSection && (
           <div className="text-center text-gray-600 mt-10">
-            <h3 className="text-2xl font-semibold">Welcome to HouseKeeping Services</h3>
+            <h3 className="text-2xl font-semibold">Welcome to Maintainance Services</h3>
             <p className="mt-4">Please select an option from the sidebar to get started.</p>
           </div>
         )}

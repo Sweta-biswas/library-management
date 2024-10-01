@@ -27,6 +27,8 @@ const LandingPageLibrary = () => {
         const token = response.data.token; // Assuming the token is sent in the response
         localStorage.setItem('token', token);
 
+        localStorage.setItem('role','user');
+
         // Show a success toast notification
         toast.success(response.data.message, { position: 'top-right' });
 
@@ -49,6 +51,8 @@ const LandingPageLibrary = () => {
         // If login is successful, store the token in localStorage
         const token = response.data.token; // Assuming the token is sent in the response
         localStorage.setItem('token', token);
+        
+        localStorage.setItem('role','admin');
 
         // Show a success toast notification
         toast.success(response.data.message, { position: 'top-right' });

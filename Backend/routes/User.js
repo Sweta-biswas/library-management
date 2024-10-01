@@ -13,7 +13,7 @@ const loginSchema = z.object({
 
 router.post('/userlogin', async (req, res) => {
   try {
-    console.log(req.body);
+
     const { username, password } = loginSchema.parse(req.body);
     const name=username;
 
