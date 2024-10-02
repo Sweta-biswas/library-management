@@ -13,7 +13,7 @@ const ItemAvailability = () => {
     const token = localStorage.getItem('token'); // Retrieve token from localStorage
     
     try {
-      const response = await axios.get(`http://localhost:5000/api/v1/transaction/${itemType}s/availability`, {
+      const response = await axios.get(`https://backend-smoky-ten-70.vercel.app/api/v1/transaction/${itemType}s/availability`, {
         params: {
           [searchBy]: encodeURIComponent(searchValue)
         },

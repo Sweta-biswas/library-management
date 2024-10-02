@@ -2,7 +2,7 @@ const express = require('express');
 const { z } = require('zod');
 const jwt = require('jsonwebtoken');
 const { Book, Movie, Issue,User, Fine } = require('../db');
-const { authMiddleware } = require('../middleware');
+const { authMiddleware } = require('../auth');
 const router = express.Router();
 
 require('dotenv').config();

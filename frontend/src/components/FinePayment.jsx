@@ -26,7 +26,7 @@ const FinePayment = () => {
   const fetchIssueDate = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/v1/transaction/fetch-issue-date',
+        'https://backend-smoky-ten-70.vercel.app/api/v1/transaction/fetch-issue-date',
         { name, authorOrDirector, serialNumber },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -48,7 +48,7 @@ const FinePayment = () => {
   const calculateFine = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/v1/transaction/calculate-fine',
+        'https://backend-smoky-ten-70.vercel.app/api/v1/transaction/calculate-fine',
         { returnDate, actualReturnDate: actualReturnDate.toISOString() }, // Send Date object as string
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -65,7 +65,7 @@ const FinePayment = () => {
   const handleConfirm = async () => {
     try {
       await axios.post(
-        'http://localhost:5000/api/v1/transaction/pay-fine',
+        'https://backend-smoky-ten-70.vercel.app/api/v1/transaction/pay-fine',
         {
           type,
           name,

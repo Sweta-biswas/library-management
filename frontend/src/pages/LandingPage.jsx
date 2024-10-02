@@ -18,7 +18,7 @@ const LandingPageLibrary = () => {
     if (activeTab === 'user') {
       try {
         // Send a POST request to the backend API for user login
-        const response = await axios.post('http://localhost:5000/api/v1/user/userlogin', {
+        const response = await axios.post('https://backend-smoky-ten-70.vercel.app/api/v1/user/userlogin', {
           username,
           password,
         });
@@ -43,7 +43,7 @@ const LandingPageLibrary = () => {
     } else if (activeTab === 'admin') {
       try {
         // Send a POST request to the backend API for admin login
-        const response = await axios.post('http://localhost:5000/api/v1/admin/login', {
+        const response = await axios.post('https://backend-smoky-ten-70.vercel.app/api/v1/admin/login', {
           username,
           password,
         });

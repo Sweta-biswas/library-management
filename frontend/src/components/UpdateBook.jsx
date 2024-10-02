@@ -20,7 +20,7 @@ const UpdateBookOrMovie = () => {
 
     try {
       const response = await axios.put(
-        'http://localhost:5000/api/v1/admin/update-book-movie',
+        'https://backend-smoky-ten-70.vercel.app/api/v1/admin/update-book-movie',
         {
           type,      // Changed from mediaType to type
           name,      // Changed from mediaName to name

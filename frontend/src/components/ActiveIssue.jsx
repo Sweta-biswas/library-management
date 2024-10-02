@@ -14,7 +14,7 @@ const Active = () => {
         const token = localStorage.getItem('token');
 
         // Make the API call with the token in the headers
-        const response = await axios.get('http://localhost:5000/api/v1/report/active-issue', {
+        const response = await axios.get('https://backend-smoky-ten-70.vercel.app/api/v1/report/active-issue', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

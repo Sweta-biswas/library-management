@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { z } = require('zod');
 const { Issue, Book, Movie, Membership, Fine } = require('../db');
-const { authMiddleware } = require('../middleware');
+const { authMiddleware } = require('../auth');
 
 // Define Zod schema to validate the issue data
 const issueSchema = z.object({

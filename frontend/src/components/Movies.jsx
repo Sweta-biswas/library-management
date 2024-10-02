@@ -13,7 +13,7 @@ const MoviesList = () => {
       const token = localStorage.getItem('token');
 
       // Make an API call to fetch movies
-      const response = await axios.get('http://localhost:5000/api/v1/report/movies-list', {
+      const response = await axios.get('https://backend-smoky-ten-70.vercel.app/api/v1/report/movies-list', {
         headers: {
           Authorization: `Bearer ${token}` // Include the token in the request headers
         }

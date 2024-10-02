@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken'); // For token-based authentication
 const { z } = require('zod'); // Import Zod for schema validation
 const router = express.Router();
 const { Membership, Book, User, Movie } = require('../db'); // Import Membership and Book models from db.js
-const { authMiddleware } = require('../middleware');
+const { authMiddleware } = require('../auth');
 const bcrypt= require('bcrypt');
 
 // // JWT Secret (this should be in your environment variables for security)

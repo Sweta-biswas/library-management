@@ -37,7 +37,7 @@ const AddBookOrMovie = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:5000/api/v1/admin/add-books',
+        'https://backend-smoky-ten-70.vercel.app/api/v1/admin/add-books',
         bookData,
         {
           headers: {

@@ -13,7 +13,7 @@ const BooksList = () => {
       const token = localStorage.getItem('token');
 
       // Make an API call to get the list of books
-      const response = await axios.get('http://localhost:5000/api/v1/report/books-list', {
+      const response = await axios.get('https://backend-smoky-ten-70.vercel.app/api/v1/report/books-list', {
         headers: {
           Authorization: `Bearer ${token}` // Pass the token in the Authorization header
         }
